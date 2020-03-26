@@ -12,9 +12,7 @@ def read_matrix(file):
     sudoku = []
     for line in f:
         line = line[1:len(line)-2]
-        #print(line)
         fields = line.split(', ')
-        #print(fields)
         row = []
         row = [int(x) for x in fields]
         sudoku.append(row)
@@ -23,10 +21,10 @@ def read_matrix(file):
 
 
 def check_sudoku(sudoku):
-    print("Is the following detect matrix correct ? \n(Yes/No)")
+    print("Is the following detect matrix correct ?\n(Yes/No)")
     print_matrix(sudoku)
     if not accepted():
-        print("Please edit the matrix in the txt file,save")
+        print("Please edit the matrix in the opened .txt file and then save")
         while (True):
             f = open("temp.txt","w")
             for line in sudoku:
@@ -41,7 +39,4 @@ def check_sudoku(sudoku):
             if not accepted():
                 break
     os.system("rm temp.txt")
-    return sudoku      
-        
-
-        
+    return sudoku

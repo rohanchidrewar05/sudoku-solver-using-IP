@@ -42,7 +42,6 @@ def check(sudoku,i,j,num,div_x,div_y):
 
 def solve(doBacktrack, sudoku, i, j, count,limit,div_x,div_y):
 	if count == limit:
-	#	print("limit babbaya")
 		print("Solved it : \n")
 		print_matrix(sudoku)
 		return False
@@ -50,15 +49,12 @@ def solve(doBacktrack, sudoku, i, j, count,limit,div_x,div_y):
 	rows, cols = len(sudoku),len(sudoku[0])
 
 	if (i >= rows) or (j >= cols) :
-	#	print("sizes anna")
 		return False
 	
 	m = 1
-	#print('i : ',i,' j: ',j,' m: ',m,' count: ',count)
 	if sudoku[i][j] == 0 :
 		while ( doBacktrack and (m < rows+1) and (i < rows) and (j < cols)):
 			if check(sudoku,i,j,m,div_x,div_y):
-				#print('i : ',i,' j: ',j,' m: ',m,' count: ',count)
 				sudoku[i][j] = m
 				if i < rows-1 and j < cols :
 					doBacktrack = solve(True,sudoku,i+1,j,count+1,limit,div_x,div_y)
@@ -74,10 +70,8 @@ def solve(doBacktrack, sudoku, i, j, count,limit,div_x,div_y):
 			m = m + 1
 		
 		if (doBacktrack and (m == rows+1)):
-	#		print("go back bitch \n")
 			return True
 	else:
-		#print('i : ',i,' j: ',j,' m: ',m,' count: ',count)
 		if (i<rows-1) and (j<cols):
 			doBacktrack = solve(True,sudoku,i+1,j,count,limit,div_x,div_y)
 		elif (i>=rows-1) and (j<cols-1):
@@ -89,23 +83,11 @@ def solve(doBacktrack, sudoku, i, j, count,limit,div_x,div_y):
 			return False
 		
 		if doBacktrack:
-	#		print("go back bitch \n")
 			return True
-	#print("WTF")
 	return False
 
 	
-'''
-sudoku = [[0,0,0,0,0,4,0,0,0],
-[0,0,0,0,0,0,6,0,8],
-[0,0,8,0,1,0,0,0,0],
-[0,0,5,0,3,0,8,0,2],
-[0,7,0,2,0,0,0,0,1],
-[0,6,0,0,0,0,0,0,0], 
-[0,0,0,4,0,7,0,9,0],
-[0,9,0,0,0,0,4,7,0],
-[0,3,0,5,2,0,0,0,0]]
-'''
+
 
 def sudoku_solver(sudoku):
 	rows, cols = len(sudoku),len(sudoku[0])
