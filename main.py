@@ -2,11 +2,12 @@ import time
 from image_processor import sudoku_extractor
 from solver import sudoku_solver
 from check import check_sudoku
+from utils import get_path
 
 if __name__ == "__main__":
     
-    print("Enter name of Image to be processed")
-    img_name = input()
+    print("Please select Image to be processed")
+    img_name = get_path()
 
     sudoku = sudoku_extractor(img_name)
 
