@@ -56,13 +56,13 @@ def sudoku_extractor(img_name):
   '''
   Locates the position of each box of the sudoku puzzle in the image and extract digits from them.
   '''
-  print(img_name)
+  #print(img_name)
   img = cv2.imread(img_name)
 
   warped,maxlen = warp(img)
   boxdims = [int(n) for n in np.linspace(0,maxlen,10)]
   boxlen = int(maxlen/9)
-  
+
   # Reads the template, find the 10 largest contours (each is a digit), and map the index of digits to the appropriate contours
   numbers_template = cv2.imread(os.getcwd()+'/utils/numbers.jpg',0)
   template_conts, _ = cv2.findContours(numbers_template, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)

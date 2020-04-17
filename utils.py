@@ -14,7 +14,6 @@ def accepted():
 
 def verify_file(file_path):
     file_type = imghdr.what(file_path)
-    print(file_type)
     if file_type == 'jpeg' or file_type == 'png' or file_type =='bmp' or file_type == 'rgb':
         return True
     else:
@@ -25,7 +24,7 @@ def get_path():
     file_path = filedialog.askopenfilename()
     try:
         if verify_file(file_path):
-            print(file_path)
+            #print(file_path)
             return file_path
         else:
             print("Selected file may not be a image, do you want to to retry?\n(Yes/No)")
