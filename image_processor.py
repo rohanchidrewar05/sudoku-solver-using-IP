@@ -4,6 +4,7 @@ import math
 import operator
 import os
 import cv2
+import sys
 
 def getcontourorder(contour):
 # Used to map the contour to the correct position in the array
@@ -14,12 +15,12 @@ def l2_dist(pt1,pt2):
 # Calculates the L2 distance between points pt1 and pt2
   return np.sqrt((pt2[0]-pt1[0])**2 + (pt2[1]-pt1[1])**2)
 
-def warp(image):
-'''
-Converts the original RGB to gray, applies Gaussian blur if the image is large,
-applies pixel thresolding, finds the largest contour in the image (the boundary around the Sudoku puzzle)
-crops and warps the original image to a square.
-'''
+def warp(img):
+  '''
+  Converts the original RGB to gray, applies Gaussian blur if the image is large,
+  applies pixel thresolding, finds the largest contour in the image (the boundary around the Sudoku puzzle)
+  crops and warps the original image to a square.
+  '''
   gray = cv2.cvtColor(img.copy(),cv2.COLOR_BGR2GRAY)
 
   if max(gray.shape[0],gray.shape[1])>500:
@@ -29,7 +30,7 @@ crops and warps the original image to a square.
 
   thresh = cv2.adaptiveThreshold(blurred.copy(),255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY_INV,7,2 )
 
-  conts, heirarchy = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+  conts, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
   conts = sorted(conts, key=cv2.contourArea, reverse=True)
   cont = conts[0]
 
@@ -46,24 +47,25 @@ crops and warps the original image to a square.
   target_rect = np.array([ [0,0], [max_len,0] ,[max_len,max_len],[0,max_len]] , dtype='float32')
 
   pers_transform = cv2.getPerspectiveTransform(original_rect,target_rect)
-  after_warp = cv2.warpPerspective(blurred.copy(), pers_transform, (max_len,max_len) )
+  warped = cv2.warpPerspective(blurred.copy(), pers_transform, (max_len,max_len) )
   after_warp = warped[3:max_len-3,3:max_len-3]
-  return after_warp
+  return after_warp,max_len
 
 
 def sudoku_extractor(img_name):
-'''
-Locates the position of each box of the sudoku puzzle in the image and extract digits from them.
-'''
+  '''
+  Locates the position of each box of the sudoku puzzle in the image and extract digits from them.
+  '''
+  print(img_name)
+  img = cv2.imread(img_name)
 
-  img_path = os.getcwd() + '/images/' + img_name
-  img = cv2.imread(img_path)
-
-  warped = warp(img)
-
+  warped,maxlen = warp(img)
+  boxdims = [int(n) for n in np.linspace(0,maxlen,10)]
+  boxlen = int(maxlen/9)
+  
   # Reads the template, find the 10 largest contours (each is a digit), and map the index of digits to the appropriate contours
   numbers_template = cv2.imread(os.getcwd()+'/utils/numbers.jpg',0)
-  template_conts, heirarchy = cv2.findContours(numbers_template, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
+  template_conts, _ = cv2.findContours(numbers_template, cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_SIMPLE)
   template_conts = sorted(template_conts, key=cv2.contourArea, reverse=True)
   template_conts= template_conts[:10]
   template_conts = sorted(template_conts, key=lambda x:getcontourorder(x))
@@ -128,7 +130,7 @@ Locates the position of each box of the sudoku puzzle in the image and extract d
         isolated_digit = cv2.resize(isolated_digit,(35,60))
 
         scores=[]
-        for (digit,digit_template) in digits.items():
+        for (_,digit_template) in digits.items():
           result = cv2.matchTemplate(isolated_digit, digit_template,cv2.TM_CCOEFF)
           (_,score,_,_) = cv2.minMaxLoc(result)
           scores.append(score)
